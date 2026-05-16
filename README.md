@@ -16,16 +16,10 @@ This is under the BSD 3 License.
 In order to install and run use these two tatics: 
 1. SUDO APT: do with this command:
 ```bash
-# 1. Register your GitHub Pages APT repository
-echo "deb [trusted=yes] https://github.io stable main" | sudo tee /etc/apt/sources.list.d/vip-editor.list
-
-# 2. Synchronize your package indexes
-sudo apt update
-
-# 3. Pull and install VIP Editor!
-sudo apt install vip-editor
+echo "deb [trusted=yes] https://live-by-unix.github.io/VIP-DEBIAN/ ./" | sudo tee /etc/apt/sources.list.d/vip-editor.list
+sudo apt update && sudo apt install vip-editor 
 ```
-Now you can use it with vip-editor
+Now you can use it with vip-editor command to run. 
 
 2. Python way:
 Clone this github repo 
