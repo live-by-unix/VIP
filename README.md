@@ -35,7 +35,7 @@ In order to install and run, use these two tactics:
 Do this with the following command:
 
  ```bash
- echo "deb [trusted=yes] [https://live-by-unix.github.io/VIP-DEBIAN/](https://live-by-unix.github.io/VIP-DEBIAN/) ./" | sudo tee /etc/apt/sources.list.d/vip-editor.list
+ echo "deb [trusted=yes] https://live-by-unix.github.io/VIP-DEBIAN/ ./" | sudo tee /etc/apt/sources.list.d/vip-editor.list
 sudo apt update && sudo apt install vip-editor
 ```
 
