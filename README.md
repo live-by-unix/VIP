@@ -1,4 +1,36 @@
-## Welcome to VIP Text Editor Factorial Program (VIP for short).      
+## Welcome to VIP Text Editor Factorial Program (VIP for short).          
+<img width="150" height="150" alt="gemini-svg" src="https://github.com/user-attachments/assets/9d0cf566-ea7e-4eb5-9283-9a47e7762eb0" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <!-- Background Squircle (Rounded Square) -->
+  <rect width="512" height="512" rx="100" fill="#1A1B26"/>
+  
+  <!-- Terminal Window Control Buttons -->
+  <circle cx="80" cy="80" r="15" fill="#F7768E"/>
+  <circle cx="130" cy="80" r="15" fill="#E0AF68"/>
+  <circle cx="180" cy="80" r="15" fill="#9ECE6A"/>
+
+  <!-- "VIP" Text - Using standard cross-platform Monospace font stack -->
+  <text x="50%" y="300" 
+        font-family="Monaco, 'Courier New', Courier, monospace" 
+        font-size="140" 
+        font-weight="900" 
+        fill="#C0CAF5" 
+        text-anchor="middle">VIP</text>
+  
+  <!-- Terminal Cursor (the blinking block style) -->
+  <rect x="345" y="210" width="60" height="100" fill="#7AA2F7">
+    <animate attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite" />
+  </rect>
+
+  <!-- Subtitle for that "Pro" feel -->
+  <text x="50%" y="420" 
+        font-family="Monaco, 'Courier New', Courier, monospace" 
+        font-size="28" 
+        fill="#565F89" 
+        text-anchor="middle" 
+        letter-spacing="5">Terminal Editor</text>
+</svg>
+
 I would like to welcome you to the world of VIP.      
 VIP is a text editor written in Python that allows you to do quick terminal edits with ease. A preview is attached below.      
 <img width="700" height="320" alt="Screenshot 2026-05-15 at 5 45 04 PM" src="https://github.com/user-attachments/assets/1e4dd3da-89d8-4a6f-90e5-ae9bc14a5c20" />    
