@@ -29,7 +29,7 @@ It is written for maximum compatibility with Unix®-like or Unix®-based operati
 
 ## Licensing and CLI Commandwork and General Installation
 This is under the BSD 3 License.     
-In order to install and run, use these two tactics: 
+In order to install and run, use any of these two tactics: 
 
 ### 1. SUDO APT
 Do this with the following command:
