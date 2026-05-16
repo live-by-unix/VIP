@@ -1,15 +1,16 @@
 import curses
 import os
 
-MENU = "^W Write Mode  ^I Insert mode  ^Q Exit No Save  ^Y Save Insert  ^X Exit Write  ^T Exit Insert  ^G Exit Save All"
+MENU = "^W Write Mode   ^E Insert mode   ^Q Exit No Save   ^Y Save Insert   ^X Exit Write   ^T Exit Insert   ^G Exit Save All"
 
 class Buffer:
-    def __init__(self, path=None, lines=None, cx=0, cy=0, scroll=0):
+    def __init__(self, path=None, lines=None, cx=0, cy=0, scroll=0, hscroll=0):
         self.path = path
         self.lines = lines if lines else [""]
         self.cx = cx
         self.cy = cy
         self.scroll = scroll
+        self.hscroll = hscroll
 
     @classmethod
     def from_file(cls, path):
@@ -75,11 +76,16 @@ class Buffer:
             self.cy += 1
             self.cx = min(self.cx, len(self.lines[self.cy]))
 
-    def adjust_scroll(self, height):
+    def adjust_scroll(self, height, width):
         if self.cy < self.scroll:
             self.scroll = self.cy
         elif self.cy >= self.scroll + height:
             self.scroll = self.cy - height + 1
+
+        if self.cx < self.hscroll:
+            self.hscroll = self.cx
+        elif self.cx >= self.hscroll + width:
+            self.hscroll = self.cx - width + 1
 
 def save_chunked(path, buffer):
     with open(path, "w", encoding="utf-8") as f:
@@ -127,21 +133,23 @@ def editor(stdscr, original_path):
         safe_addstr(stdscr, 0, 0, header, curses.A_REVERSE)
 
         visible_height = h - 2
-        active.adjust_scroll(visible_height)
+        visible_width = w - 1
+        active.adjust_scroll(visible_height, visible_width)
 
         for i in range(visible_height):
             idx = active.scroll + i
             if idx >= len(active.lines):
                 break
             line = active.lines[idx]
-            safe_addstr(stdscr, i + 1, 0, line)
+            visible_line = line[active.hscroll:]
+            safe_addstr(stdscr, i + 1, 0, visible_line)
 
         safe_addstr(stdscr, h - 1, 0, MENU, curses.A_REVERSE)
 
         cy = active.cy - active.scroll + 1
-        cx = min(active.cx, w - 2)
+        cx = active.cx - active.hscroll
 
-        if 1 <= cy < h - 1:
+        if 1 <= cy < h - 1 and 0 <= cx < w:
             try:
                 stdscr.move(cy, cx)
             except:
@@ -154,14 +162,15 @@ def editor(stdscr, original_path):
             mode = "WRITE"
             active = write_buffer
 
-        elif key == 9:
+        elif key == 5:
             mode = "INSERT"
             insert_buffer = Buffer(
                 path=write_buffer.path,
                 lines=write_buffer.lines.copy(),
                 cx=write_buffer.cx,
                 cy=write_buffer.cy,
-                scroll=write_buffer.scroll
+                scroll=write_buffer.scroll,
+                hscroll=write_buffer.hscroll
             )
             active = insert_buffer
 
@@ -175,7 +184,8 @@ def editor(stdscr, original_path):
                     lines=insert_buffer.lines.copy(),
                     cx=insert_buffer.cx,
                     cy=insert_buffer.cy,
-                    scroll=insert_buffer.scroll
+                    scroll=insert_buffer.scroll,
+                    hscroll=insert_buffer.hscroll
                 )
                 active = write_buffer
                 mode = "WRITE"
@@ -218,7 +228,7 @@ def editor(stdscr, original_path):
 
 def boot():
     print("========================================")
-    print("         Welcome to VIP Editor         ")
+    print("         Welcome to VIP Editor          ")
     print("========================================")
 
     path_input = input("File to Create/Edit:\n")
