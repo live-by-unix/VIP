@@ -16,12 +16,12 @@ This is under the BSD 3 License.
 In order to install and run use these two tatics: 
 1. SUDO APT: do with this command:
 ```bash
-echo "deb [trusted=yes] https://live-by-unix.github.io/VIP-DEBIAN/ ./" | sudo tee /etc/apt/sources.list.d/vip-editor.list
-sudo apt update && sudo apt install vip-editor 
-```
+echo "deb [trusted=yes] [https://live-by-unix.github.io/VIP-DEBIAN/](https://live-by-unix.github.io/VIP-DEBIAN/) ./" | sudo tee /etc/apt/sources.list.d/vip-editor.list
+sudo apt update && sudo apt install vip-editor
+
 Now you can use it with vip-editor command to run. 
 
-2. Python way:
+3. Python way:
 Clone this github repo 
 ```bash
 git clone https://github.com/live-by-unix/VIP.git
