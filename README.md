@@ -11,18 +11,37 @@ Now that I have explained how to *use* the VIP Text Editor Factorial Program, I 
 The tech stack is a basic python script, which uses the built in libraries curses and os.  
 It is written for maxiumum compatibility with Unix®-like or Unix®-based operating systems.     
 
-## Licensing and CLI commandwork    
+## Licensing and CLI commandwork and general installatiom
 This is under the BSD 3 License.     
-In order to use VIP Text Editor as a CLI program you have these options.        
-Enter the ~/.zshrc (Mac) or ~/.bashrc (Linux or WSL) file in your favorite text editor (which can be VIP!).         
-And at the bottom put ```bash
-```   
-alias vip='python3 path/to/your/VIP/pyfile.py'
+In order to install and run use these two tatics: 
+1. SUDO APT: do with this command:
+```bash
+# 1. Register your GitHub Pages APT repository
+echo "deb [trusted=yes] https://github.io stable main" | sudo tee /etc/apt/sources.list.d/vip-editor.list
 
-# Then run source ~/.zshrc (Mac) or source ~/.bashrc (Linux or WSL) and try VIP Text Editor.
+# 2. Synchronize your package indexes
+sudo apt update
 
+# 3. Pull and install VIP Editor!
+sudo apt install vip-editor
+```
+Now you can use it with vip-editor
 
- 
+2. Python way:
+Clone this github repo 
+```bash
+git clone https://github.com/live-by-unix/VIP.git
+```
+Once cloned, cd and run vip.py to test. In order to alias run this command: 
+```bash
+# Add the alias to your bash profile (replace /path/to/cloned/repo with the actual folder path)
+echo "alias vip='python3 /path/to/cloned/repo/vip.py'" >> ~/.bashrc
+
+# Reload bash to apply the changes immediately
+source ~/.bashrc
+```
+### Well done!
+Now you have the VIP Text Editor Factorial Program. 
 
 
 
