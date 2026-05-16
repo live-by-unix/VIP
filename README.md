@@ -34,16 +34,28 @@ In order to install and run, use these two tactics:
 ### 1. SUDO APT
 Do this with the following command:
 
-bash ``` echo "deb [trusted=yes] [https://live-by-unix.github.io/VIP-DEBIAN/](https://live-by-unix.github.io/VIP-DEBIAN/) ./" | sudo tee /etc/apt/sources.list.d/vip-editor.list
-sudo apt update && sudo apt install vip-editor``` Now you can use VIP editor easily!
+ ```bash
+ echo "deb [trusted=yes] [https://live-by-unix.github.io/VIP-DEBIAN/](https://live-by-unix.github.io/VIP-DEBIAN/) ./" | sudo tee /etc/apt/sources.list.d/vip-editor.list
+sudo apt update && sudo apt install vip-editor
+```
 
 ### 2. Python way (latest updates)         
 Download the newest release and unzip it.        
-Then bash ``` cd path/to/your/vip/build ```  and run python3 vip.py and do some testing.              
+Then
+```bash 
+cd path/to/your/vip/build 
+```
+and run python3 vip.py and do some testing.              
 In order to alias it, this is the drill.      
-bash ```nano ~/.bashrc # Or zshrc for mac. ```      
+```bash 
+nano ~/.bashrc # Or zshrc for mac.
+ ```      
 Then add this at the bottom,       
-bash ``` alias vip-editor='python3 /path/to/your/vip/vip.py' ```     
-Then save your changes and do bash ``` source ~/.bashrc # Or zshrc on mac ```    
+ ```bash 
+ alias vip-editor='python3 /path/to/your/vip/vip.py' ```     
+ # Then save your changes and do
+source ~/.bashrc # Or zshrc on mac
+```   
+And pow! You have the VIP Text Editor Factorial Program 
 
-### And just like that, run vip-editor, you have the VIP Terminal Text Editor Factorial Program!        
+
