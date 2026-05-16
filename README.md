@@ -57,17 +57,23 @@ Then add this at the bottom,
 source ~/.bashrc # Or zshrc on mac
 ```   
 And pow! You have the VIP Text Editor Factorial Program 
-### How VIP works. 
-VIP keyboard shortcuts are pretty self explanatory (see above), so mainly this is about the difference between WRITE and INSERT mode.         
-In Vim, you know write as browsing the file like a view-only google doc, and insert to actually insert text. But it's different in VIP.        
-Write Mode: Writes directly to the text file, as usual, just like text editors like BBEdit, Nano, or even VSCode.           
-Insert Mode: creates a text version of your current file (if you were editing jello.py, insert mode would create a file named jello.py.txt).     
-It will copy over everything from the original document you were editing (say jello.py) and all the changes your write in insert mode will be saved to the text file.     
-In order to delete jello.py and rename jello.py.txt to jello.py (keeping your changes in normal talk) do ^Y. To delete jello.py.txt and switch back to editing jello.py, do ^T.    
-To save your insert changes ONLY and exit, do ^T, which exits and saves only your write mode changes.     
-To save only your write mode changes do ^Y.     
-To exit and save both write and insert mode, do ^G.        
+### How VIP Works
 
-And BOOM! Now you can use the VIP Text Editor! 
+VIP keyboard shortcuts are pretty self-explanatory, so the main concept to understand is the unique architectural difference between **WRITE** and **INSERT** mode. 
+
+In Vim, you look at "Normal" mode as a way to navigate or browse the file like a view-only Google Doc, and "Insert" mode to actually type text. **VIP flips this concept on its head.**
+
+* **WRITE Mode:** This is your primary editor state. It writes directly to your active working memory buffer—exactly like standard non-modal text editors such as Nano, BBEdit, or VSCode. 
+* **INSERT Mode (Triggered with `^E`):** This is your experimental staging ground. When you enter INSERT mode, VIP takes an isolated snapshot of your current file state. You can think of it like working on a temporary version (`jello.py.txt`). You can type, delete, and experiment freely in this sandbox without risking your stable baseline code.
+
+#### Merging and Aborting Changes
+
+Because of this dual-buffer system, you have complete version control over your text right from your keyboard shortcuts:
+
+* **`^Y` (Save/Merge Insert):** Copies all your experimental updates from the INSERT buffer back into your primary WRITE buffer, updating your main file state and returning you to WRITE mode. (Like running a `git merge`).
+* **`^T` (Exit/Abort Insert):** Drops your experimental INSERT buffer entirely from memory, discarding your recent playground edits and snapping you safely back to your untouched, original WRITE state. (Like running a `git checkout -- file`).
+* **`^G` (Exit Save All):** Instantly flushes your active buffer straight to your storage drive and quits the application immediately.
+
+And **BOOM!** Now you can use the VIP Text Editor with total confidence!
 
 
