@@ -1,23 +1,25 @@
 import curses
 import os
-import shutil
 
 MENU = "^W Write Mode  ^I Insert mode  ^Q Exit No Save  ^Y Save Insert  ^X Exit Write  ^T Exit Insert  ^G Exit Save All"
 
 class Buffer:
-    def __init__(self, lines=None):
+    def __init__(self, path=None, lines=None, cx=0, cy=0, scroll=0):
+        self.path = path
         self.lines = lines if lines else [""]
-        self.cx = 0
-        self.cy = 0
-        self.scroll = 0
+        self.cx = cx
+        self.cy = cy
+        self.scroll = scroll
 
     @classmethod
     def from_file(cls, path):
         if os.path.exists(path):
+            lines = []
             with open(path, "r", encoding="utf-8") as f:
-                lines = f.read().splitlines()
-            return cls(lines if lines else [""])
-        return cls([""])
+                for line in f:
+                    lines.append(line.rstrip("\r\n"))
+            return cls(path, lines if lines else [""])
+        return cls(path, [""])
 
     def text(self):
         return "\n".join(self.lines)
@@ -79,9 +81,10 @@ class Buffer:
         elif self.cy >= self.scroll + height:
             self.scroll = self.cy - height + 1
 
-def save(path, buffer):
+def save_chunked(path, buffer):
     with open(path, "w", encoding="utf-8") as f:
-        f.write(buffer.text())
+        for line in buffer.lines:
+            f.write(line + "\n")
 
 def resolve_path(inp):
     home = os.path.expanduser("~")
@@ -89,18 +92,11 @@ def resolve_path(inp):
 
 def safe_addstr(stdscr, y, x, text, attr=0):
     h, w = stdscr.getmaxyx()
-
-    if y < 0 or y >= h:
+    if y < 0 or y >= h or x < 0 or x >= w:
         return
-
-    if x < 0 or x >= w:
-        return
-
     available = max(0, w - x - 1)
-
     if available <= 0:
         return
-
     try:
         stdscr.addstr(y, x, text[:available], attr)
     except:
@@ -112,8 +108,6 @@ def editor(stdscr, original_path):
     stdscr.keypad(True)
 
     original_name = os.path.basename(original_path)
-    temp_path = original_path + ".txt"
-
     write_buffer = Buffer.from_file(original_path)
     insert_buffer = Buffer.from_file(original_path)
 
@@ -122,7 +116,6 @@ def editor(stdscr, original_path):
 
     while True:
         stdscr.erase()
-
         h, w = stdscr.getmaxyx()
 
         if h < 3 or w < 20:
@@ -134,15 +127,12 @@ def editor(stdscr, original_path):
         safe_addstr(stdscr, 0, 0, header, curses.A_REVERSE)
 
         visible_height = h - 2
-
         active.adjust_scroll(visible_height)
 
         for i in range(visible_height):
             idx = active.scroll + i
-
             if idx >= len(active.lines):
                 break
-
             line = active.lines[idx]
             safe_addstr(stdscr, i + 1, 0, line)
 
@@ -158,7 +148,6 @@ def editor(stdscr, original_path):
                 pass
 
         stdscr.refresh()
-
         key = stdscr.getch()
 
         if key == 23:
@@ -167,42 +156,43 @@ def editor(stdscr, original_path):
 
         elif key == 9:
             mode = "INSERT"
-
-            if not os.path.exists(temp_path):
-                save(temp_path, write_buffer)
-
-            insert_buffer = Buffer.from_file(temp_path)
+            insert_buffer = Buffer(
+                path=write_buffer.path,
+                lines=write_buffer.lines.copy(),
+                cx=write_buffer.cx,
+                cy=write_buffer.cy,
+                scroll=write_buffer.scroll
+            )
             active = insert_buffer
 
         elif key == 17:
-            if os.path.exists(temp_path):
-                os.remove(temp_path)
             break
 
         elif key == 25:
-            save(temp_path, insert_buffer)
+            if mode == "INSERT":
+                write_buffer = Buffer(
+                    path=insert_buffer.path,
+                    lines=insert_buffer.lines.copy(),
+                    cx=insert_buffer.cx,
+                    cy=insert_buffer.cy,
+                    scroll=insert_buffer.scroll
+                )
+                active = write_buffer
+                mode = "WRITE"
 
         elif key == 24:
-            save(original_path, write_buffer)
-
-            if os.path.exists(temp_path):
-                os.remove(temp_path)
-
+            save_chunked(original_path, write_buffer)
             break
 
         elif key == 20:
-            save(temp_path, insert_buffer)
-
-            if os.path.exists(original_path):
-                os.remove(original_path)
-
-            os.rename(temp_path, original_path)
-            break
+            active = write_buffer
+            mode = "WRITE"
 
         elif key == 7:
-            save(original_path, write_buffer)
-            save(temp_path, insert_buffer)
-            shutil.copyfile(temp_path, original_path)
+            if mode == "INSERT":
+                save_chunked(original_path, insert_buffer)
+            else:
+                save_chunked(original_path, write_buffer)
             break
 
         elif key in (curses.KEY_BACKSPACE, 127, 8):
@@ -228,17 +218,16 @@ def editor(stdscr, original_path):
 
 def boot():
     print("========================================")
-    print("          Welcome to VIP Editor         ")
+    print("         Welcome to VIP Editor         ")
     print("========================================")
 
-    path_input = input("File to Create/Edit (include full folder path, vip looks from home directory.)\n")
-
+    path_input = input("File to Create/Edit:\n")
     full_path = resolve_path(path_input)
 
     os.makedirs(os.path.dirname(full_path), exist_ok=True)
 
     if not os.path.exists(full_path):
-        with open(full_path, "w", encoding="utf-8"):
+        with open(full_path, "w", encoding="utf-8") as f:
             pass
 
     curses.wrapper(editor, full_path)
