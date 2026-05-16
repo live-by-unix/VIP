@@ -57,5 +57,17 @@ Then add this at the bottom,
 source ~/.bashrc # Or zshrc on mac
 ```   
 And pow! You have the VIP Text Editor Factorial Program 
+### How VIP works. 
+VIP keyboard shortcuts are pretty self explanatory (see above), so mainly this is about the difference between WRITE and INSERT mode.         
+In Vim, you know write as browsing the file like a view-only google doc, and insert to actually insert text. But it's different in VIP.        
+Write Mode: Writes directly to the text file, as usual, just like text editors like BBEdit, Nano, or even VSCode.           
+Insert Mode: creates a text version of your current file (if you were editing jello.py, insert mode would create a file named jello.py.txt).     
+It will copy over everything from the original document you were editing (say jello.py) and all the changes your write in insert mode will be saved to the text file.     
+In order to delete jello.py and rename jello.py.txt to jello.py (keeping your changes in normal talk) do ^Y. To delete jello.py.txt and switch back to editing jello.py, do ^T.    
+To save your insert changes ONLY and exit, do ^T, which exits and saves only your write mode changes.     
+To save only your write mode changes do ^Y.     
+To exit and save both write and insert mode, do ^G.        
+
+And BOOM! Now you can use the VIP Text Editor! 
 
 
