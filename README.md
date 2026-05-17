@@ -47,4 +47,7 @@ I hope you will enjoy and use the ** TUI VIP Text Editor Factorial Program. **
 And this is it, this is under BSD-3.0 License, and free to use.    
 Homebrew coming soon! 
 
+### ** IMPORTANT NOTICE, WILL NOT BE IN THE RELEASE README.MD, PLS READ NOW. ** 
+** When using vip, if you do not specify the file extension (hello doesn't have the .txt, bye doesn't have the .java, you know) THE FILE may COME UP EMPTY. SO PLEASE ALWAYS INCLUDE FILE EXTENSION. **
+
 
