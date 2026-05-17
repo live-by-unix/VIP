@@ -10,7 +10,7 @@ Previews of the VIP text editor are show below.
 <img width="2355" height="1027" alt="Screenshot 2026-05-17 at 9 24 52 AM" src="https://github.com/user-attachments/assets/71e403ff-4710-429b-adfb-a442e22208b5" />     
 
 ## Installation.    
-There is only ONE way to install.     
+Currently, there is only ONE way to install.     
 And disclaimer: People who went digging through the version history (you're a chad) and found a SUDO APT method, I hate to break the news, BUT that port is deleted.     
 Why? Well it's because the debian path was wayyyyy to hard to maintain and pushing updates took a long time and a lot of work for a limited Linux audience (Debian based only).    
 And great news, I will have a HOMEBREW port open soon, preferably done by the end of May this year (2026).      
