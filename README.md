@@ -11,10 +11,14 @@ Previews of the VIP text editor are show below.
 
 ## Installation.    
 There is only ONE way to install.     
-And disclaimer: People who went digging through the version history and found a SUDO APT method, I hate to break the news, BUT that port is deleted.     
-Why? Well it's because the debian path was wayyyyy to hard to maintain and pushing updates took a long time.    
-And great news, I will have a HOMEBREW port open soon, preferably done by the end of May.      
-Number 1 # Currently the only way: In order to install, download and unzip the latest release or just git clone this entire repo.       
+And disclaimer: People who went digging through the version history (you're a chad) and found a SUDO APT method, I hate to break the news, BUT that port is deleted.     
+Why? Well it's because the debian path was wayyyyy to hard to maintain and pushing updates took a long time and a lot of work for a limited Linux audience (Debian based only).    
+And great news, I will have a HOMEBREW port open soon, preferably done by the end of May this year (2026).      
+Number 1 # Currently the only way: In order to install, download and unzip the latest release or just git clone this entire repo.
+To git clone, do this command 
+``` bash
+git clone https://github.com/live-by-unix/VIP.git
+```
 Once you have the full repo and have cded in the folder with vip.py, run 
 ````bash
 python3 vip.py
@@ -33,8 +37,18 @@ source ~/.bashrc # or zshrc on zsh shells & macOS.
 ````
 ### How to use. 
 Once you tested vip-editor works, how do you create your first file?     
-Well, the keyboard shortcuts explain for themselves, but I will explain write and insert. 
-^W Write  ^E Insert  ^Q Quit  ^Y Commit  ^X Save&Exit Wr  ^B Save&Exit Ins  ^T Esc Ins  ^G Save&Exit All  ^F Find  ^Z Undo    
+Well, the keyboard shortcuts explain for themselves, but I will explain write and insert quickly, for now read this bullet point list.    
+* **^W** Writes directly to a file
+* **^E** Enters Insert mode.
+* **^Q** Exit without saving ANY changes.
+* **^Y** Commit your Insert changes.
+* **^X** Save ONLY Write changes and exit.
+* **^B** Save ONLY Insert changes and exit.
+* **^T** Exits and deletes the Insert file and goes back to Write.
+* **^G** Save ALL changes (Write and Insert) and exit.
+* **^F** Finds text in your current file.
+* **^Z** Undos the last change. 
+  
 Now, I will explain Insert and Write.    
 Write is normally writing your changes directly to the file.    
 Insert is creating a .txt version of your file (if editing jello.java, insert would create a file named jello.java.txt)     
@@ -43,11 +57,11 @@ To save a insert to the original file toy inserted, do ^Y. To delete a insert an
 All the other shortcuts are find or Exit and do something, but whatever.     
 
 ### And this is the end.     
-I hope you will enjoy and use the ** TUI VIP Text Editor Factorial Program. **    
+I hope you will enjoy and use the **TUI VIP Text Editor Factorial Program.**    
 And this is it, this is under BSD-3.0 License, and free to use.    
 Homebrew coming soon! 
 
-### ** IMPORTANT NOTICE, WILL NOT BE IN THE RELEASE README.MD, PLS READ NOW. ** 
-** When using vip, if you do not specify the file extension (hello doesn't have the .txt, bye doesn't have the .java, you know) THE FILE may COME UP EMPTY. SO PLEASE ALWAYS INCLUDE FILE EXTENSION. **
+### **IMPORTANT NOTICE, WILL NOT BE IN THE RELEASE README.MD, PLS READ NOW.** 
+**When using VIP, if you do not specify the file extension (hello doesn't have the .txt, bye doesn't have the .java, you know) THE FILE may COME UP EMPTY. SO PLEASE ALWAYS INCLUDE FILE EXTENSION.**
 
 
