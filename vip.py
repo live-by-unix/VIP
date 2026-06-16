@@ -25,9 +25,12 @@ class Buffer:
     def from_file(cls, path):
         if os.path.exists(path):
             lines = []
-            with open(path, "r", encoding="utf-8") as f:
-                for line in f:
-                    lines.append(line.rstrip("\r\n"))
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    for line in f:
+                        lines.append(line.rstrip("\r\n"))
+            except Exception:
+                pass
             return cls(path, lines if lines else [""])
         return cls(path, [""])
 
@@ -106,73 +109,67 @@ class Buffer:
         elif self.cx >= self.hscroll + width:
             self.hscroll = self.cx - width + 1
 
+
 def save_chunked(path, buffer):
-    with open(path, "w", encoding="utf-8") as f:
-        for line in buffer.lines:
-            f.write(line + "\n")
+    try:
+        with open(path, "w", encoding="utf-8") as f:
+            for line in buffer.lines:
+                f.write(line + "\n")
+    except Exception:
+        pass
+
 
 def resolve_path(inp):
     home = os.path.expanduser("~")
     return os.path.abspath(os.path.join(home, inp.strip()))
 
+
 def safe_addstr(stdscr, y, x, text, attr=0):
     h, w = stdscr.getmaxyx()
     if y < 0 or y >= h or x < 0 or x >= w:
         return
-    available = max(0, w - x)
+    available = w - x
     if available <= 0:
         return
     try:
         stdscr.addstr(y, x, text[:available], attr)
-    except:
+    except Exception:
         pass
 
+
 def draw_highlighted_line(stdscr, y, start_x, line, hscroll, max_w, highlight_enabled):
-    visible_line = line[hscroll:]
+    visible_line = line[hscroll:hscroll + max_w]
     if not visible_line:
         return
+
     if not highlight_enabled:
         safe_addstr(stdscr, y, start_x, visible_line)
         return
 
-    tokens = [(len(visible_line), 0)]
+    # Create an attribute map for each character in the full line
+    char_attrs = [0] * len(line)
     for pattern, color_idx in SYNTAX_RULES:
         for match in re.finditer(pattern, line):
             start, end = match.start(), match.end()
-            v_start = max(0, start - hscroll)
-            v_end = max(0, end - hscroll)
-            if v_start >= len(visible_line) or v_start == v_end:
-                continue
-            
-            new_tokens = []
-            for t_len, t_attr in tokens:
-                t_str = visible_line[len(visible_line)-t_len:] if t_len > 0 else ""
-                curr_start_idx = len(visible_line) - t_len
-                curr_end_idx = curr_start_idx + t_len
-                
-                if v_end <= curr_start_idx or v_start >= curr_end_idx:
-                    new_tokens.append((t_len, t_attr))
-                    continue
-                
-                overlap_start = max(v_start, curr_start_idx)
-                overlap_end = min(v_end, curr_end_idx)
-                
-                if overlap_start > curr_start_idx:
-                    new_tokens.append((overlap_start - curr_start_idx, t_attr))
-                new_tokens.append((overlap_end - overlap_start, curses.color_pair(color_idx)))
-                if overlap_end < curr_end_idx:
-                    new_tokens.append((curr_end_idx - overlap_end, t_attr))
-            tokens = new_tokens
+            for i in range(start, end):
+                char_attrs[i] = curses.color_pair(color_idx)
 
+    # Render the visible segment character chunk by chunk to reduce screen redraw overhead
     curr_x = start_x
-    accumulated_len = 0
-    for t_len, t_attr in tokens:
-        if curr_x - start_x >= max_w:
-            break
-        chunk = visible_line[accumulated_len:accumulated_len + t_len]
-        safe_addstr(stdscr, y, curr_x, chunk, t_attr)
-        curr_x += len(chunk)
-        accumulated_len += t_len
+    idx = hscroll
+    end_idx = min(len(line), hscroll + max_w)
+    
+    while idx < end_idx:
+        attr = char_attrs[idx]
+        run_length = 0
+        while idx + run_length < end_idx and char_attrs[idx + run_length] == attr:
+            run_length += 1
+        
+        chunk = line[idx:idx + run_length]
+        safe_addstr(stdscr, y, curr_x, chunk, attr)
+        curr_x += run_length
+        idx += run_length
+
 
 def search_prompt(stdscr, h, w):
     curses.echo()
@@ -186,15 +183,19 @@ def search_prompt(stdscr, h, w):
     try:
         search_bytes = stdscr.getstr(h - 1, len(prompt), 60)
         search_str = search_bytes.decode('utf-8', errors='ignore')
-    except:
+    except Exception:
         search_str = ""
     curses.noecho()
     return search_str
 
+
 def push_history(history_stack, buffer_obj):
-    history_stack.append(copy.deepcopy(buffer_obj.lines))
+    # Shallow copy of lines is enough since lines are strings (immutable strings in list)
+    # This prevents the devastating performance hit of deepcopying huge files on every keystroke
+    history_stack.append(list(buffer_obj.lines))
     if len(history_stack) > 100:
         history_stack.pop(0)
+
 
 def editor(stdscr, original_path):
     curses.raw()
@@ -232,6 +233,8 @@ def editor(stdscr, original_path):
         if h < 3 or w < 30:
             safe_addstr(stdscr, 0, 0, "Terminal too small.")
             stdscr.refresh()
+            # Catch the character anyway to avoid 100% CPU load spin loops
+            stdscr.getch()
             continue
 
         pos_str = f" Ln {active.cy + 1}, Col {active.cx + 1} "
@@ -265,21 +268,22 @@ def editor(stdscr, original_path):
         if 1 <= cy < h - 1 and gutter_width <= cx < w:
             try:
                 stdscr.move(cy, cx)
-            except:
+            except Exception:
                 pass
 
         stdscr.refresh()
         key = stdscr.getch()
 
-        if key == 23:
+        # Handle Commands
+        if key == 23:  # ^W
             mode = "WRITE"
             active = write_buffer
 
-        elif key == 5:
+        elif key == 5:  # ^E
             mode = "INSERT"
             insert_buffer = Buffer(
                 path=write_buffer.path,
-                lines=copy.deepcopy(write_buffer.lines),
+                lines=list(write_buffer.lines), # Shallow list copy optimization
                 cx=write_buffer.cx,
                 cy=write_buffer.cy,
                 scroll=write_buffer.scroll,
@@ -287,19 +291,19 @@ def editor(stdscr, original_path):
             )
             active = insert_buffer
 
-        elif key == 17:
+        elif key == 17:  # ^Q
             break
 
-        elif key == 2:
+        elif key == 2:  # ^B
             if mode == "INSERT":
                 save_chunked(original_path, insert_buffer)
                 break
 
-        elif key == 25:
+        elif key == 25:  # ^Y
             if mode == "INSERT":
                 write_buffer = Buffer(
                     path=insert_buffer.path,
-                    lines=copy.deepcopy(insert_buffer.lines),
+                    lines=list(insert_buffer.lines),
                     cx=insert_buffer.cx,
                     cy=insert_buffer.cy,
                     scroll=insert_buffer.scroll,
@@ -309,22 +313,22 @@ def editor(stdscr, original_path):
                 mode = "WRITE"
                 push_history(history, active)
 
-        elif key == 24:
+        elif key == 24:  # ^X
             save_chunked(original_path, write_buffer)
             break
 
-        elif key == 20:
+        elif key == 20:  # ^T
             active = write_buffer
             mode = "WRITE"
 
-        elif key == 7:
+        elif key == 7:  # ^G
             if mode == "INSERT":
                 save_chunked(original_path, insert_buffer)
             else:
                 save_chunked(original_path, write_buffer)
             break
 
-        elif key == 6:
+        elif key == 6:  # ^F
             query = search_prompt(stdscr, h, w)
             if query:
                 found = False
@@ -350,13 +354,14 @@ def editor(stdscr, original_path):
                             active.cx = c
                             break
 
-        elif key == 26:
+        elif key == 26:  # ^Z
             if len(history) > 1:
                 history.pop()
-                active.lines = copy.deepcopy(history[-1])
+                active.lines = list(history[-1])
                 active.cy = min(active.cy, len(active.lines) - 1)
                 active.cx = min(active.cx, len(active.lines[active.cy]))
 
+        # Navigation & Mutation
         elif key in (curses.KEY_BACKSPACE, 127, 8):
             active.backspace()
             if mode != "INSERT":
@@ -388,23 +393,36 @@ def editor(stdscr, original_path):
         elif 32 <= key <= 126:
             active.insert(chr(key))
             if mode != "INSERT":
+                # Tip: For real-world use, you might want to push to history only 
+                # on Spacebar or pause events to prevent tracking 100 character variations.
                 push_history(history, active)
+
 
 def boot():
     print("========================================")
-    print("          Welcome to VIP Editor         ")
+    print("         Welcome to VIP Editor          ")
     print("========================================")
 
     path_input = input("File to Create/Edit:\n")
+    if not path_input.strip():
+        print("Invalid file path.")
+        return
+        
     full_path = resolve_path(path_input)
 
-    os.makedirs(os.path.dirname(full_path), exist_ok=True)
+    if os.path.dirname(full_path):
+        os.makedirs(os.path.dirname(full_path), exist_ok=True)
 
     if not os.path.exists(full_path):
-        with open(full_path, "w", encoding="utf-8") as f:
-            pass
+        try:
+            with open(full_path, "w", encoding="utf-8") as f:
+                pass
+        except Exception as e:
+            print(f"Error initializing file: {e}")
+            return
 
     curses.wrapper(editor, full_path)
+
 
 if __name__ == "__main__":
     boot()
