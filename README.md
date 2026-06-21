@@ -38,6 +38,7 @@ source ~/.bashrc # or zshrc on zsh shells & macOS.
 Homebrew installation can be done with this one simple code block
 ```bash
 brew tap live-by-unix/vip
+brew trust live-by-unix/vip
 brew update
 brew install vip-editor
 ```
