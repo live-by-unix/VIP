@@ -12,8 +12,9 @@ Previews of the VIP text editor are show below.
 ## Installation.    
 And disclaimer: People who went digging through the version history (you're a chad) and found a SUDO APT method, I hate to break the news, BUT that port is deleted.     
 Why? Well it's because the debian path was wayyyyy to hard to maintain and pushing updates took a long time and a lot of work for a limited Linux audience (Debian based only).    
-And great news, I HAVE A HOMEBREW PORT OPEN! It was supposed to be open at the end of May 2026, but I got a tap ready! 
-* Number 1 # git clone with the command below or download the latest release zip and unzip.  
+There are 3 ways to install VIP Text Editor:
+
+* Number 1 # git clone with the command below or download the latest release zip and unzip. (slowest, best for latest changes)   
 To git clone, do this command 
 ``` bash
 git clone https://github.com/live-by-unix/VIP.git
@@ -34,7 +35,7 @@ Once done, run
 ```` bash
 source ~/.bashrc # or zshrc on zsh shells & macOS.
 ````
-* Number 2: Homebrew
+* Number 2: Homebrew (easiest & fastest)
 Homebrew installation can be done with this one simple code block
 ```bash
 brew tap live-by-unix/vip
@@ -42,6 +43,14 @@ brew trust live-by-unix/vip
 brew update
 brew install vip-editor
 ```
+* Number 3
+Install by using vip.bin file. (Linux only, super fast & lightweight)
+You can do ./vip.bin or alias it to vip-editor by putting this in your .bashrc or .zshrc
+```bash
+alias vip-editor="/path/to/vip.bin"
+```
+**Note, you may need to chmod +x the .bin file before usage** 
+
 Now you can use VIP with vip-editor! 
 
 ### How to use. 
