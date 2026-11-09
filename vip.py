@@ -9,6 +9,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 import re
 import unicodedata
+import sys
 
 # Constants
 MENU = " ^W Write  ^E Insert  ^Q Quit  ^Y Commit  ^X Save&Exit Wr  ^B Save&Exit Ins  ^T Esc Ins  ^G Save&Exit All  ^F Find  ^Z Undo "
@@ -471,10 +472,23 @@ def save_atomic(path: str, buffer: Buffer) -> Tuple[bool, Optional[str]]:
                 pass
 
 
-def resolve_path(inp: str) -> str:
-    """Resolve path relative to home directory."""
+def resolve_path(inp: str, from_home: bool = False) -> str:
+    """Resolve a path, preferring the current directory before home."""
+    path = os.path.expanduser(inp.strip())
+    if os.path.isabs(path):
+        return os.path.abspath(path)
+
     home = os.path.expanduser("~")
-    return os.path.abspath(os.path.join(home, inp.strip()))
+    home_path = os.path.abspath(os.path.join(home, path))
+    if from_home:
+        return home_path
+
+    current_path = os.path.abspath(path)
+    if os.path.exists(current_path):
+        return current_path
+    if os.path.exists(home_path):
+        return home_path
+    return current_path
 
 
 def safe_addstr(stdscr: Any, y: int, x: int, text: str, attr: int = 0) -> None:
@@ -1078,13 +1092,22 @@ def boot() -> None:
     print("========================================")
     print(f"       Welcome to VIP Editor {VERSION}")
     print("========================================")
-    
-    path_input = input("File to Create/Edit: ")
-    if not path_input.strip():
+
+    if len(sys.argv) > 1:
+        path_input = " ".join(sys.argv[1:]).strip()
+        from_home = False
+    else:
+        path_input = input("File to Create/Edit (relative paths start in home): ").strip()
+        from_home = True
+
+    if not path_input:
         print("Invalid file path.")
         return
-    
-    full_path = resolve_path(path_input)
+
+    full_path = resolve_path(path_input, from_home=from_home)
+    if os.path.isdir(full_path):
+        print(f"Error: '{full_path}' is a directory, not a file.")
+        return
     
     # Create parent directories if needed
     parent_dir = os.path.dirname(full_path)
