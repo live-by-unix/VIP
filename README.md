@@ -6,8 +6,9 @@
 VIP is a special TUI (Terminal User Interface) Text Editor.     
 This README.md is divided into five sections. Intro, How to Install, How to Use, and Conclusion.     
 Previews of the VIP text editor are show below.    
-<img width="2356" height="1033" alt="Screenshot 2026-05-17 at 9 25 14 AM" src="https://github.com/user-attachments/assets/bbf1cb43-631a-475c-bd75-8419f3384722" />
-<img width="2355" height="1027" alt="Screenshot 2026-05-17 at 9 24 52 AM" src="https://github.com/user-attachments/assets/71e403ff-4710-429b-adfb-a442e22208b5" />     
+<img width="2420" height="1024" alt="image" src="https://github.com/user-attachments/assets/82fa9ca5-d381-41c8-a6b2-c0cb92a0c61a" />
+<img width="2454" height="1023" alt="image" src="https://github.com/user-attachments/assets/bef5fd68-0fb0-4364-ba09-e81319aa5bc7" />
+
 
 ## Installation.    
 And disclaimer: People who went digging through the version history (you're a chad) and found a SUDO APT method, I hate to break the news, BUT that port is deleted.     
